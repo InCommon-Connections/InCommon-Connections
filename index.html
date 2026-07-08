@@ -287,10 +287,6 @@
       <p class="big">Let's connect and bring your vision to life.</p>
       <p>Tell us a little about what you're planning. We'll follow up personally to explore how InCommon Connections can support your mission.</p>
       <div class="contact-details">
-        <a href="mailto:edith@incommonconnections.com">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-          edith@incommonconnections.com
-        </a>
         <a href="https://incommonconnections.com" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>
           incommonconnections.com
@@ -354,7 +350,6 @@
       <div class="reveal">
         <h4>Connect</h4>
         <ul>
-          <li><a href="mailto:edith@incommonconnections.com">edith@incommonconnections.com</a></li>
           <li><a href="https://incommonconnections.com" target="_blank" rel="noopener">incommonconnections.com</a></li>
           <li><a href="#contact">Start an inquiry</a></li>
         </ul>
@@ -403,10 +398,14 @@
   function showMsg(el,text){ el.textContent=text; el.classList.add('show'); }
 
   async function sendToWeb3Forms(fields){
+
+    const formData = JSON.stringify(fields);
+    formData.append("access_key", "WEB3FORMS_KEY");
+
     const res = await fetch("https://api.web3forms.com/submit",{
       method:"POST",
       headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-      body: JSON.stringify({ access_key: WEB3FORMS_KEY, ...fields })
+      body: formData
     });
     return res.json();
   }
@@ -416,12 +415,12 @@
     const original = btn.innerHTML;
     // honeypot: if filled, silently pretend success (it's a bot)
     if(form.querySelector('[name=botcheck]').checked){ showMsg(msgEl,thanksText); form.reset(); return; }
-    // Before the key is added, still show the friendly confirmation (nothing looks broken)
+    // Before the key is added, still show the 3friendly confirmation (nothing looks broken)
     if(NOT_CONFIGURED){ showMsg(msgEl,thanksText); form.reset(); return; }
     btn.disabled=true; btn.textContent='Sending…';
     try{
       const r = await sendToWeb3Forms(buildFields());
-      if(r.success){ showMsg(msgEl,thanksText); form.reset(); }
+      if(r.ok){ showMsg(msgEl,thanksText); form.reset(); }
       else { showMsg(msgEl,'Sorry — something went wrong. Please email edith@incommonconnections.com directly.'); }
     }catch(err){
       showMsg(msgEl,'Sorry — something went wrong. Please email edith@incommonconnections.com directly.');
